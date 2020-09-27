@@ -58,7 +58,7 @@ begin
 	for i in 1:num_examples
   		push!(regData, (features[i,:], labels[i]))
 	end
-	
+
 end
 
 # ╔═╡ 6293416a-feff-11ea-08f3-ab1625da01ab
@@ -130,7 +130,7 @@ function train_model(batch_size, features, labels, w, b, lr, epoch)
 		end
 	end
 	return w,b
-	
+
 end
 
 ŵ, b̂ = train_model(batch_size, features, labels, w, b, lr, epoch)

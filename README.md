@@ -12,6 +12,6 @@ i want to use julia to achieve example in Mxnet instruction（chinese version, d
 
 ## Basic
 
-- [linear regression](https://github.com/ZhouZhuofei/juliaDL/blob/main/LinearRegression.jl)
-- [softclass](https://github.com/ZhouZhuofei/juliaDL/blob/main/basic/softclass.jl)
-- [softmax](https://github.com/ZhouZhuofei/juliaDL/blob/main/basic/softmax1.jl)
+- [linear regression](https://github.com/ZhouZhuofei/juliaDL/blob/main/Basic/LinearRegression.jl)
+- [softclass](https://github.com/ZhouZhuofei/juliaDL/blob/main/Basic/softclass.jl)
+- [softmax](https://github.com/ZhouZhuofei/juliaDL/blob/main/Basic/softmax1.jl)

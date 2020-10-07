@@ -3,7 +3,7 @@
 
 
 ***
-
+learning Julia, write some notebooks, like machine learning and data science, visualization.
 i want to use julia to achieve example in Mxnet instruction（chinese version, d2lzh)
 
 ***
@@ -12,7 +12,7 @@ i want to use julia to achieve example in Mxnet instruction（chinese version, d
 
 ## Basic
 
-- [linear regression](https://github.com/ZhouZhuofei/juliaDL/blob/main/Basic/LinearRegression.jl)
+- [linear regression](https://zhouzhuofei.github.io/juliaDL/Html/LinearRegression.jl.html)
 - [softclass](https://github.com/ZhouZhuofei/juliaDL/blob/main/Basic/softclass.jl)
 - [softmax](https://github.com/ZhouZhuofei/juliaDL/blob/main/Basic/softmax1.jl)
 

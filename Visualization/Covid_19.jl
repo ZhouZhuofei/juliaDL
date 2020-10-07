@@ -103,9 +103,6 @@ dt_deaths, Header_deaths = readdlm("../datasets/time_series_covid19_deaths_globa
 # ╔═╡ 1be24c26-05fc-11eb-15e8-81d8904a38ab
 dt_recover,Header_recov = readdlm("../datasets/time_series_covid19_recovered_global.csv",',',header=true)
 
-# ╔═╡ 4cd88a56-08a5-11eb-1463-67d05672a77a
-dt_country = CSV.read("../datasets/cases_country.csv")
-
 # ╔═╡ 15ed28e6-059c-11eb-190c-2512c8cc9d8e
 md"## Analysis
 ### Analysis Global Data
@@ -117,11 +114,11 @@ operating as folows:"
 
 # ╔═╡ 1037f522-0590-11eb-2a1e-318b94418794
 begin
-	comfirmed_num = []
+	confirmed_num = []
 	deaths_num = []
 	recovered_num = []
 	for i in 5:259
-		push!(comfirmed_num, sum(dt[:, i]))
+		push!(confirmed_num, sum(dt[:, i]))
 		push!(deaths_num, sum(dt_deaths[:, i]))
 		push!(recovered_num, sum(dt_recover[:,i]))
 	end
@@ -129,18 +126,18 @@ begin
 end
 
 # ╔═╡ b8eb5ea0-0592-11eb-2240-ff69390ac636
-Global_num = DataFrame(Date=dates, comfirmed_num=comfirmed_num, deaths_num=deaths_num, recovered_num=recovered_num)
+Global_num = DataFrame(Date=dates, confirmed_num=confirmed_num, deaths_num=deaths_num, recovered_num=recovered_num)
 
 # ╔═╡ a1753130-0601-11eb-1371-ab5cf2290e5b
 begin
-	n, = size(comfirmed_num)
-	new_comfirmed = []
+	n, = size(confirmed_num)
+	new_confirmed = []
 	new_death = []
 	new_recovered = []
-	death_rate = deaths_num ./ comfirmed_num
-	recover_rate = recovered_num ./ comfirmed_num
+	death_rate = deaths_num ./ confirmed_num
+	recover_rate = recovered_num ./ confirmed_num
 	for i in 2:n
-		push!(new_comfirmed, comfirmed_num[i]-comfirmed_num[i-1])
+		push!(new_confirmed, confirmed_num[i]-confirmed_num[i-1])
 		push!(new_death, deaths_num[i] - deaths_num[i-1])
 		push!(new_recovered, recovered_num[i]-recovered_num[i-1])
 	end
@@ -157,7 +154,7 @@ As we can see, the number of comfirmed cases continues to increase exponentially
 "
 
 # ╔═╡ 7cb20d98-0593-11eb-1ad9-37117ba3e5a0
-p1 = plot(dates, comfirmed_num, legend=:none, ylabel="Numbers", xlabel="Date", title="Global comfirmed numbers")
+p1 = plot(dates, confirmed_num, legend=:none, ylabel="Numbers", xlabel="Date", title="Global comfirmed numbers")
 
 # ╔═╡ 56f43390-0595-11eb-116d-e10adb862fea
 p2 = plot(dates, deaths_num, legend=:none, linecolor=:red, ylabel="Numbers", xlabel="Date", title="Global Deaths numbers")
@@ -167,7 +164,7 @@ p_re = plot(dates, recovered_num, legend=:none, linecolor=:green, ylabel="Number
 
 # ╔═╡ 6b000e4a-0595-11eb-1d6c-6fb54a74b93f
 begin
-	p3 = plot(dates, [comfirmed_num deaths_num recovered_num], label=["Comfirmed" "Deaths" "recovered"], legend=:topleft)
+	p3 = plot(dates, [confirmed_num deaths_num recovered_num], label=["Confirmed" "Deaths" "recovered"], legend=:topleft)
 	l = @layout([a [b;c;d]])
 	plot(p3, p1, p2,p_re, layout=l,xticks = [Date(2020, 1, 22), Date(2020,10,2)],size=(700,400), ylabel="Numbers", xlabel="Date", titlefontsize=10, xaxis=(font(8)))
 end
@@ -176,7 +173,7 @@ end
 md"Now, start calculate the New cases every day，and the deaths rate."
 
 # ╔═╡ 8f2f1d20-05f3-11eb-25b0-1784220d2499
-p4 = plot(Date(2020, 1, 23):Day(1):Date(2020, 10, 2),new_comfirmed,shape=:circle, legend=:topleft, label="new case", xlabel="Date", ylabel="Numbers", title="new cases every day")
+p4 = plot(Date(2020, 1, 23):Day(1):Date(2020, 10, 2),new_confirmed,shape=:circle, legend=:topleft, label="new case", xlabel="Date", ylabel="Numbers", title="new cases every day")
 
 # ╔═╡ c6d41bda-05f9-11eb-347b-6f367c5b70fb
 p5 = plot(Date(2020,1,23):Day(1):Date(2020,10,2), new_death,linecolor=:red,shape=:circle, legend=:topleft, label="new death", xlabel="Date", ylabel="Numbers", title="New death every day")
@@ -201,6 +198,183 @@ plot(Date(2020, 1, 22):Day(1):Date(2020, 10, 2),[death_rate recover_rate],xlabel
 md"the maximum death rate in 2020-4-29
 
 So, the new comfirmed cases continues to rise, the death rate is already falling."
+
+# ╔═╡ a41cc41c-08a5-11eb-04ed-43bbcf5b8bc8
+md"
+#### Prediction
+**Global Trend:**
+
+It is useful to understand the global trend of an increase in the number of cases over time. There is always a pattern in any data, but the concern is how strongly data follows a pattern. COVID-19 spreads exponentially.
+
+i think of some ways to estimate the curve:
+
+- Numerical Analysis: ❎
+- linear regression, after transmission: ✅
+- neural network: ✅
+
+So, we first focus on comfirmed case:
+
+do $y'=\sqrt{y}$ when i use to transition. maybe will get a linea function.:
+"
+
+# ╔═╡ 074a5f34-08a8-11eb-2e6f-3fe69c3be774
+begin
+	#transition
+	x = 0:n-1
+	y = Global_num.confirmed_num
+	y₁ = sqrt.(y)
+	X = [x ones(n)]
+	β = inv(X'*X)*X'*y₁
+	ŷ = (X*β).^2
+	plot(dates,Global_num.confirmed_num, label="real")
+	plot!(dates, ŷ, label="predict", annotations=[(Date(2020,4,22), 30000000, text("predict function: y=(24.77t - 584.29)²", 10))])
+end
+
+# ╔═╡ 690f7ea2-08a8-11eb-3a77-c32e93b0b950
+md"""
+Other ways: _**Neural Network**_
+
+`import Flux` to do meachine learning.
+
+the all code here:
+```julia
+using Flux, Statistics
+using Flux.Data: DataLoader
+using Flux: throttle
+using Parameters: @with_kw
+using DelimitedFiles
+using IterTools: ncycle
+using Dates
+using DataFrames
+using CSV
+using Plots
+
+
+@with_kw mutable struct Args
+    η::Float64 = 0.001
+    batchsize::Int = 1
+    epochs::Int = 1000
+end
+cd(@__DIR__)
+pwd()
+#read data:
+dt, Header = readdlm("time_series_covid19_comfirmed_global.csv", ',', header=true)
+dt_deaths, Header_deaths = readdlm("time_series_covid19_deaths_global.csv", ',', header=true)
+dt_recover,Header_recov = readdlm("time_series_covid19_recovered_global.csv",',',header=true)
+
+
+#create a new datafram to store datum
+comfirmed_num = []
+deaths_num = []
+recovered_num = []
+for i in 5:259
+    push!(comfirmed_num, sum(dt[:, i]))
+    push!(deaths_num, sum(dt_deaths[:, i]))
+    push!(recovered_num, sum(dt_recover[:,i]))
+end
+dates = Date(2020, 1, 22):Day(1):Date(2020, 10, 2)
+Global_num = DataFrame(Date=dates, 
+    comfirmed_num=comfirmed_num, 
+    deaths_num=deaths_num, 
+    recovered_num=recovered_num)
+
+#read train_data
+n, = size(comfirmed_num)
+x = 0:n-1
+y = Global_num.comfirmed_num
+args = Args()
+train_data = DataLoader((Array(x), Float64.(y)), batchsize=args.batchsize)
+
+# define leaky relu
+Lelu(x, α=100) = (x ≥ 0 ? x : x/α)
+
+#define Model
+m = Chain(
+    Dense(1, 40, Lelu),
+    Dense(40, 40, Lelu),
+    Dense(40, 40, Lelu),
+    Dense(40, 1, Lelu)
+)
+
+#define loss function
+loss(x, y) = Flux.mse(m(x), y)
+
+#define parameters
+ps = Flux.params(m)
+
+#define Opt
+opt = ADAM(args.η)
+
+#train model
+Flux.train!(loss, ps, ncycle(train_data, args.epochs), opt)
+
+#visualize
+flux_y = []
+for i in Array(x)
+    push!(flux_y, Array(m([i]))[1])
+end
+flux_y = Float64.(flux_y)
+plot(dates, [flux_y Float64.(y)], 
+    label=["predict" "real"], xlabel="date", ylabel="Numbers", size=(900, 600))
+```
+
+"""
+
+# ╔═╡ 87b583e0-08aa-11eb-0cd9-396999de8d5b
+#write a function
+function predict_curve(x, y, η::Float64=0.001, epochs::Int=1000, batchsize::Int=1)
+    dates = Date(2020, 1, 22):Day(1):Date(2020, 10, 2)
+	#prepare data
+    train_data = Flux.Data.DataLoader((x, y), batchsize=batchsize)
+	#define leaky relu
+    Lelu(x, α=100) = (x ≥ 0 ? x : x/α)
+	
+	#define model
+    m = Chain(
+    Dense(1, 40, Lelu),
+    Dense(40, 40, Lelu),
+    Dense(40, 40, Lelu),
+    Dense(40, 1, Lelu))
+	
+	#define mse
+    loss(x, y) = Flux.mse(m(x), y)
+	
+	#parameters
+    ps = Flux.params(m)
+	
+    opt = ADAM(η)
+    Flux.train!(loss, ps, ncycle(train_data, epochs), opt)
+    flux_y = []
+    for i in Array(x)
+        push!(flux_y, Array(m([i]))[1])
+    end
+    plot(dates, [Float64.(flux_y) Float64.(y)],label=["predict" "real"], xlabel="date", ylabel="Numbers", legend=:topleft)
+end
+
+# ╔═╡ 18d4a4fa-08ab-11eb-2912-79d0c89add25
+predict_curve(Array(0:254), Float64.(Global_num.confirmed_num))
+
+# ╔═╡ a1cc6374-08ab-11eb-2b6e-e1e9d6848603
+predict_curve(Array(0:254), Float64.(Global_num.deaths_num))
+
+# ╔═╡ f499186a-08ab-11eb-271d-277d68f0c0da
+predict_curve(Array(0:254), Float64.(Global_num.recovered_num))
+
+# ╔═╡ 30d23aa2-08ad-11eb-174d-bdaab2b5bb8d
+md"
+### Analysis country data
+
+consider analyzing the situation in different countries.
+"
+
+# ╔═╡ ccaa2948-08b3-11eb-1848-c9006ef99374
+dt_country = CSV.read("../datasets/cases_country.csv")
+
+# ╔═╡ 597c6202-08ad-11eb-241f-75f2794fe332
+sort(dt_country, [:Confirmed], rev=true)
+
+# ╔═╡ a4862d54-08b3-11eb-1887-ab22f0db7600
+dt_country
 
 # ╔═╡ Cell order:
 # ╟─950cbb44-0562-11eb-1949-e3d9165a2436
@@ -227,7 +401,6 @@ So, the new comfirmed cases continues to rise, the death rate is already falling
 # ╠═6ad7e4be-058c-11eb-3fac-35f5e9f14513
 # ╠═f88187b8-0594-11eb-3181-41bdee367c4a
 # ╠═1be24c26-05fc-11eb-15e8-81d8904a38ab
-# ╠═4cd88a56-08a5-11eb-1463-67d05672a77a
 # ╟─15ed28e6-059c-11eb-190c-2512c8cc9d8e
 # ╠═1037f522-0590-11eb-2a1e-318b94418794
 # ╠═b8eb5ea0-0592-11eb-2240-ff69390ac636
@@ -235,7 +408,7 @@ So, the new comfirmed cases continues to rise, the death rate is already falling
 # ╟─40d40f2e-059d-11eb-05a2-47b885c74f74
 # ╠═7cb20d98-0593-11eb-1ad9-37117ba3e5a0
 # ╠═56f43390-0595-11eb-116d-e10adb862fea
-# ╠═990e195a-05fc-11eb-37c9-d15175e25493
+# ╟─990e195a-05fc-11eb-37c9-d15175e25493
 # ╠═6b000e4a-0595-11eb-1d6c-6fb54a74b93f
 # ╟─f7e7f280-05f1-11eb-1d21-71674a8adbc0
 # ╠═8f2f1d20-05f3-11eb-25b0-1784220d2499
@@ -243,5 +416,16 @@ So, the new comfirmed cases continues to rise, the death rate is already falling
 # ╠═116a25a6-05fd-11eb-2969-c37e38fab7ae
 # ╠═0e76b13c-05fa-11eb-3ec2-d76b973dbf5a
 # ╠═1ac7c3b8-05f5-11eb-048c-47188f25dd78
-# ╠═ba3e86c2-05fd-11eb-1431-354e2a567533
+# ╟─ba3e86c2-05fd-11eb-1431-354e2a567533
 # ╟─b0ece2e4-05f8-11eb-30e4-39e726ac635c
+# ╟─a41cc41c-08a5-11eb-04ed-43bbcf5b8bc8
+# ╠═074a5f34-08a8-11eb-2e6f-3fe69c3be774
+# ╟─690f7ea2-08a8-11eb-3a77-c32e93b0b950
+# ╟─87b583e0-08aa-11eb-0cd9-396999de8d5b
+# ╠═18d4a4fa-08ab-11eb-2912-79d0c89add25
+# ╠═a1cc6374-08ab-11eb-2b6e-e1e9d6848603
+# ╠═f499186a-08ab-11eb-271d-277d68f0c0da
+# ╟─30d23aa2-08ad-11eb-174d-bdaab2b5bb8d
+# ╠═ccaa2948-08b3-11eb-1848-c9006ef99374
+# ╠═597c6202-08ad-11eb-241f-75f2794fe332
+# ╠═a4862d54-08b3-11eb-1887-ab22f0db7600

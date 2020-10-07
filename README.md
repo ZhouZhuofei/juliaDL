@@ -18,4 +18,4 @@ i want to use julia to achieve example in Mxnet instruction（chinese version, d
 
 ## Visualization
 
-- [Covid 19](https://github.com/ZhouZhuofei/juliaDL/blob/main/Html/Covid_19.jl.html)
+- [Covid 19](https://zhouzhuofei.github.io/juliaDL/Html/Covid_19.jl.html)

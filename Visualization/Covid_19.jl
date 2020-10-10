@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.11.14
+# v0.12.1
 
 using Markdown
 using InteractiveUtils
@@ -370,11 +370,82 @@ consider analyzing the situation in different countries.
 # ╔═╡ ccaa2948-08b3-11eb-1848-c9006ef99374
 dt_country = CSV.read("../datasets/cases_country.csv")
 
+# ╔═╡ aaa7b3de-092f-11eb-0958-a7f330bbd1f2
+dt_time_country = CSV.read("../datasets/cases_time.csv")
+
 # ╔═╡ 597c6202-08ad-11eb-241f-75f2794fe332
 sort(dt_country, [:Confirmed], rev=true)
 
+# ╔═╡ edae35ae-0925-11eb-2fdd-9fa7f8af09cb
+md"""
+Let's we see **Top 10 countries with confirmed cases:**
+"""
+
 # ╔═╡ a4862d54-08b3-11eb-1887-ab22f0db7600
-dt_country
+top10_confirmed = sort(select(dt_country, [:Country_Region,:Confirmed]), [:Confirmed], rev=true)[1:10,:]
+
+# ╔═╡ 2d19f8c6-0927-11eb-01e0-11f7f70e787a
+bar(top10_confirmed.Country_Region,top10_confirmed.Confirmed, label=["Confirmed"], xrotation = 45)
+#orientation = :horizontal
+
+# ╔═╡ e45246b6-0933-11eb-20a9-eb05292ea852
+function change_date(x)
+	year = parse(Int, split(string(x,"20"), "/")[3])
+	months = parse(Int, split(string(x,"20"), "/")[1])
+	day = parse(Int, split(string(x,"20"), "/")[2])
+	return Date(year, months, day)	
+end
+
+# ╔═╡ e2ac5104-0934-11eb-24b1-f52efecef580
+newdttime_country = select(dt_time_country,Not(:Last_Update), :Last_Update => ByRow(change_date) => :date);
+
+# ╔═╡ 7b0a0aae-0980-11eb-352c-750b0da2478a
+function show_time_case(dt, top)
+	y = []
+	for i in unique(top.Country_Region)
+		x = sort(dt[dt.Country_Region .== i, :], [:date]).date
+		y₁ = sort(dt[dt.Country_Region .== i, :], [:date]).Confirmed
+		push!(y, y₁)
+	end
+	return y
+end
+
+# ╔═╡ 6aedbd90-0988-11eb-05b7-d5c2611aae23
+newdttime_country[newdttime_country.Country_Region .== "US", :]
+
+# ╔═╡ fe6be992-0982-11eb-1977-2599f65c0d71
+size(show_time_case(newdttime_country, top10_confirmed)[3])
+
+# ╔═╡ 3ad5a096-0981-11eb-349e-a36db1a7194b
+sort(dt_time_country[dt_time_country.Country_Region .== "US", :])
+
+# ╔═╡ 6f28e936-097f-11eb-29d9-bb410ae44b90
+dt_time_country
+
+# ╔═╡ 4a5974f0-0929-11eb-2701-098196bd0ab1
+md"""
+**Top 10 countries with death cases:**
+"""
+
+# ╔═╡ 80aa7b6c-0929-11eb-138b-7fbfe4bf9377
+top10_death = sort(select(dt_country, [:Country_Region,:Deaths]), [:Deaths], rev=true)[1:10,:]
+
+# ╔═╡ a16d21b0-0929-11eb-2240-c9d8b886e588
+bar(top10_death.Country_Region,top10_death.Deaths, label=["Deaths"], color=:red, xrotation = 45)
+
+# ╔═╡ bc50d1a2-092b-11eb-2fe5-2d7679b49bd4
+md"""
+**Top 10 countries with recoverd case:**
+"""
+
+# ╔═╡ e30fce18-092b-11eb-022c-7b8890de8e85
+top10_recovered = dropmissing(sort(select(dt_country, [:Country_Region,:Recovered]), [:Recovered], rev=true))[1:10, :]
+
+# ╔═╡ 150b05fe-092c-11eb-2caf-1f528e180735
+bar(top10_recovered.Country_Region,top10_recovered.Recovered, label=["Recovered"], color=:green, xrotation = 45)
+
+# ╔═╡ 22c76a4a-0a53-11eb-0de2-e7d4e2047485
+
 
 # ╔═╡ Cell order:
 # ╟─950cbb44-0562-11eb-1949-e3d9165a2436
@@ -427,5 +498,22 @@ dt_country
 # ╠═f499186a-08ab-11eb-271d-277d68f0c0da
 # ╟─30d23aa2-08ad-11eb-174d-bdaab2b5bb8d
 # ╠═ccaa2948-08b3-11eb-1848-c9006ef99374
+# ╠═aaa7b3de-092f-11eb-0958-a7f330bbd1f2
 # ╠═597c6202-08ad-11eb-241f-75f2794fe332
+# ╟─edae35ae-0925-11eb-2fdd-9fa7f8af09cb
 # ╠═a4862d54-08b3-11eb-1887-ab22f0db7600
+# ╠═2d19f8c6-0927-11eb-01e0-11f7f70e787a
+# ╟─e45246b6-0933-11eb-20a9-eb05292ea852
+# ╠═e2ac5104-0934-11eb-24b1-f52efecef580
+# ╠═7b0a0aae-0980-11eb-352c-750b0da2478a
+# ╠═6aedbd90-0988-11eb-05b7-d5c2611aae23
+# ╠═fe6be992-0982-11eb-1977-2599f65c0d71
+# ╠═3ad5a096-0981-11eb-349e-a36db1a7194b
+# ╠═6f28e936-097f-11eb-29d9-bb410ae44b90
+# ╟─4a5974f0-0929-11eb-2701-098196bd0ab1
+# ╠═80aa7b6c-0929-11eb-138b-7fbfe4bf9377
+# ╠═a16d21b0-0929-11eb-2240-c9d8b886e588
+# ╟─bc50d1a2-092b-11eb-2fe5-2d7679b49bd4
+# ╠═e30fce18-092b-11eb-022c-7b8890de8e85
+# ╠═150b05fe-092c-11eb-2caf-1f528e180735
+# ╠═22c76a4a-0a53-11eb-0de2-e7d4e2047485

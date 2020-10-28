@@ -160,7 +160,6 @@ res1 = normal_one_probility(t, log.(y))
 scatter(res1.y_pre, res1.rᵢ)
 
 # ╔═╡ 9f737ec4-17b4-11eb-1384-351e209c6cb8
-
 NormalProbabilityPlot(res.rᵢ)
 
 # ╔═╡ a8b71038-17b2-11eb-3ac4-d5ff9fffaa11
@@ -234,6 +233,117 @@ correct(md"the function: ``ln(mmHg) = -5200.76 \cdot \frac1T + 20.6074``")
 # ╔═╡ dbe4f300-18f5-11eb-3751-2f7a7997a159
 html"<br></br>"
 
+# ╔═╡ b5499d0a-1929-11eb-346c-2fc9cda07625
+md"""
+## 5.3
+The average number of living 🦠(bacteria) in canned food products and the number of minutes exposed to 300∘F.
+
+1. make a scatter diagram to see if the linear relationsihp is reasionable.
+
+2. fitting linear model, calculate President messurement, and make the residual graph. What conclusions can be drawn about the applicable performance of the model.
+
+3. The suitable model transformation for this data is identified, and the data is fitted with the transformed model and the general test of model applicability is carried out.
+"""
+
+
+# ╔═╡ a85eb29c-192b-11eb-0d05-c1087fb1ee63
+data3 = DataFrame(time=[1,2,3,4,5,6,7,8,9,10,11,12],number=[175,108,95,82,71,50,49,31,28,17,16,11])
+
+# ╔═╡ f5672d3a-192b-11eb-271d-3f82c74c1fce
+scatter(data3.time, data3.number, leg=:none, xlabel="expose time", ylabel="bacteria numbers")
+
+# ╔═╡ 80c4ddf0-192c-11eb-02eb-6b8e5ed1ecde
+correct(md"Direct use of linear model isn't a good way.")
+
+# ╔═╡ 88253dec-192c-11eb-3fe4-d3c9f3eb9882
+ols3 = lm(@formula(number ~ time), data3)
+
+# ╔═╡ f1750ab0-192d-11eb-23c4-f9f82e4343e7
+r2(ols3)
+
+# ╔═╡ a94f5610-192c-11eb-387f-87f04e2d3774
+begin
+	res3 = normal_one_probility(data3.time, data3.number)
+	scatter(res3.y_pre, res3.e, leg=:none, xlabel="predict y value", ylabel="residual")
+end
+
+# ╔═╡ b29e4abc-192e-11eb-23ce-c52e1b6c41e0
+NormalProbabilityPlot(res3.e)
+
+# ╔═╡ c0f3ad04-192f-11eb-166b-59f0ccd50ce1
+note(md"we can find a obvious outliers point, if we delect the point.
+
+here we choose two ways to do linear transformation.
+
+- ``y=\beta_0 e ^{\beta_1 x}``
+- ``y = \beta_0 + \beta_1 log x`` ")
+
+# ╔═╡ 9ac087a0-1930-11eb-28e9-e7886e5816bc
+scatter(data3.time, log.(data3.number))
+
+# ╔═╡ b367c318-1930-11eb-0d0b-53498dd6eab0
+scatter(log.(data3.time), data3.number)
+
+# ╔═╡ aceb07f2-1933-11eb-122b-4185d4d50031
+begin
+	res33 = normal_one_probility(log.(data3[2:end, :].time), data3[2:end, :].number)
+	scatter(res33.y_pre, res33.e, leg=:none)
+end
+
+# ╔═╡ 00a65f8a-1941-11eb-0ece-7beb73a126d6
+correct(md"so, if we delect a outlier point, and do a ``x' = ln(x)``")
+
+# ╔═╡ a74d3a02-1941-11eb-2192-510011d1f284
+html"<br></br>"
+
+# ╔═╡ dee284c2-1941-11eb-0dab-ab42595e7d56
+md"""
+## 5.4
+Considering the data shown below, the scatter diagram is constructed and the appropriate form of the refression model is suggested.
+"""
+
+# ╔═╡ 0102859c-1943-11eb-332e-3f896f4114e5
+data4 = DataFrame(x=[10,15,18,12,9,8,11,6], y=[0.17,0.13,0.09,0.15,0.20,0.21,0.18,0.24])
+
+# ╔═╡ 32ab63f2-1943-11eb-2ece-03627d4a4e09
+scatter(data4.x, data4.y, leg=:none)
+
+# ╔═╡ 4c06b20c-1943-11eb-3191-21e1fb66dbc8
+ols4 = lm(@formula(y ~ x), data4)
+
+# ╔═╡ 69ff0ebc-1943-11eb-101b-43f5f6d7ce18
+begin
+	res4 = normal_one_probility(data4.x, data4.y)
+	scatter(res4.y_pre, res4.e, xlabel="fitting value", ylabel="residual")
+end
+
+# ╔═╡ 9afdcdfa-1943-11eb-26e4-eb1268dfe551
+correct(md"``y = -0.0121215 \cdot x + 0.306103``, but the residual plot does not look good. Taking the _natural log of x_ makes better model.")
+
+# ╔═╡ 6e64f52e-1944-11eb-05db-49ed550f6fa3
+begin
+	res44 = normal_one_probility(log.(data4.x), data4.y)
+	scatter(res44.y_pre, res44.e, xlabel="fitting value", ylabel="residual", label="do log")
+end
+
+# ╔═╡ e3cfa076-1943-11eb-35ac-3110da30870f
+html"<br></br>"
+
+# ╔═╡ 9d324cb2-1944-11eb-38b1-ff70b0c41486
+md"""
+## 5.5
+Bottle makers have recoverded the average number of defects due to gravel per 10,000 bottles and the number of weeks since the last furnace was repaired.
+
+1. fitting the linear model and Standard test for model suitability
+2. suggeat a reasionable transformation to slove the mistake in 1, fitting the after transformation and model suitability
+"""
+
+# ╔═╡ c769f1e0-1946-11eb-397e-99b41d51b867
+data5 = DataFrame(number=[13.0,16.1,14.5,17.8,22.0,27.4,16.8,34.2,65.6,49.2,66.2,81.2,87.4,114.5], weeks=[4,5,6,7,8,9,10,11,12,13,14,15,16,17])
+
+# ╔═╡ 2215d92e-1947-11eb-1840-4d92bcb14185
+scatter(data5.weeks, data5.number, leg=:none, xlabel="weeks", ylabel="number")
+
 # ╔═╡ Cell order:
 # ╟─c98883c0-1794-11eb-2d9b-4138e0d901d8
 # ╟─fab7c734-1793-11eb-2c22-3f7a797bd617
@@ -243,7 +353,7 @@ html"<br></br>"
 # ╟─ff14ac7a-17ac-11eb-2385-c3565c4ed946
 # ╟─08c6a4ba-17af-11eb-35ff-2f7daa814291
 # ╟─ec6c2cc6-17b4-11eb-0b5e-a90d68d8c6b0
-# ╠═b8ce3ebc-18f0-11eb-3dd5-3f799465f5ec
+# ╟─b8ce3ebc-18f0-11eb-3dd5-3f799465f5ec
 # ╟─3ef4c8bc-18f4-11eb-3f4a-7179d5e3f071
 # ╟─c7bd8dae-1794-11eb-145e-4938a72ebf82
 # ╟─20e05c08-17a0-11eb-17d2-c3862d4f222c
@@ -275,3 +385,28 @@ html"<br></br>"
 # ╟─89c38532-18f5-11eb-2b17-0f367a4a51fd
 # ╟─ae63ac1e-18f5-11eb-2790-c5d647e2c52a
 # ╟─dbe4f300-18f5-11eb-3751-2f7a7997a159
+# ╟─b5499d0a-1929-11eb-346c-2fc9cda07625
+# ╟─a85eb29c-192b-11eb-0d05-c1087fb1ee63
+# ╠═f5672d3a-192b-11eb-271d-3f82c74c1fce
+# ╟─80c4ddf0-192c-11eb-02eb-6b8e5ed1ecde
+# ╠═88253dec-192c-11eb-3fe4-d3c9f3eb9882
+# ╠═f1750ab0-192d-11eb-23c4-f9f82e4343e7
+# ╠═a94f5610-192c-11eb-387f-87f04e2d3774
+# ╟─b29e4abc-192e-11eb-23ce-c52e1b6c41e0
+# ╟─c0f3ad04-192f-11eb-166b-59f0ccd50ce1
+# ╠═9ac087a0-1930-11eb-28e9-e7886e5816bc
+# ╠═b367c318-1930-11eb-0d0b-53498dd6eab0
+# ╠═aceb07f2-1933-11eb-122b-4185d4d50031
+# ╟─00a65f8a-1941-11eb-0ece-7beb73a126d6
+# ╟─a74d3a02-1941-11eb-2192-510011d1f284
+# ╟─dee284c2-1941-11eb-0dab-ab42595e7d56
+# ╟─0102859c-1943-11eb-332e-3f896f4114e5
+# ╟─32ab63f2-1943-11eb-2ece-03627d4a4e09
+# ╟─4c06b20c-1943-11eb-3191-21e1fb66dbc8
+# ╟─69ff0ebc-1943-11eb-101b-43f5f6d7ce18
+# ╟─9afdcdfa-1943-11eb-26e4-eb1268dfe551
+# ╟─6e64f52e-1944-11eb-05db-49ed550f6fa3
+# ╟─e3cfa076-1943-11eb-35ac-3110da30870f
+# ╟─9d324cb2-1944-11eb-38b1-ff70b0c41486
+# ╟─c769f1e0-1946-11eb-397e-99b41d51b867
+# ╟─2215d92e-1947-11eb-1840-4d92bcb14185

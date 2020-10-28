@@ -15,6 +15,7 @@ i want to use julia to achieve example in Mxnet instruction（chinese version, d
 - [linear regression](https://zhouzhuofei.github.io/juliaDL/Html/LinearRegression.jl.html)
 - [softclass](https://github.com/ZhouZhuofei/juliaDL/blob/main/Basic/softclass.jl)
 - [softmax](https://github.com/ZhouZhuofei/juliaDL/blob/main/Basic/softmax1.jl)
+- [Regularization](https://github.com/ZhouZhuofei/juliaDL/blob/main/Basic/Regularization.jl)
 
 ## Visualization
 

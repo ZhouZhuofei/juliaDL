@@ -88,7 +88,7 @@ function NormalProbabilityPlot(data)
 	p=[(i -0.5)/n for i in 1:n]
 	x=quantile(Normal(), p)
 	y=sort([(i-mu)/sig for i in data])
-	scatter(x, y)
+	qqplot(x, y, qqline=:R, xlabel="Theoretical Quantiles", ylabel="Standardized Residuals", title="Normal Q-Q")
 end
 
 # ╔═╡ b8ce3ebc-18f0-11eb-3dd5-3f799465f5ec
@@ -160,7 +160,7 @@ res1 = normal_one_probility(t, log.(y))
 scatter(res1.y_pre, res1.rᵢ)
 
 # ╔═╡ 9f737ec4-17b4-11eb-1384-351e209c6cb8
-NormalProbabilityPlot(res.rᵢ)
+NormalProbabilityPlot(res.e)
 
 # ╔═╡ a8b71038-17b2-11eb-3ac4-d5ff9fffaa11
 correct(md"There is slight improvement in the model")
@@ -344,6 +344,24 @@ data5 = DataFrame(number=[13.0,16.1,14.5,17.8,22.0,27.4,16.8,34.2,65.6,49.2,66.2
 # ╔═╡ 2215d92e-1947-11eb-1840-4d92bcb14185
 scatter(data5.weeks, data5.number, leg=:none, xlabel="weeks", ylabel="number")
 
+# ╔═╡ 14111252-19a2-11eb-16c2-fbb07b4d574f
+ols5 = lm(@formula(number ~ weeks), data5)
+
+# ╔═╡ 2e46c27a-19a2-11eb-31f6-cb94419d9a62
+begin
+	res5 = normal_one_probility(data5.weeks, data5.number)
+	scatter(res5.y_pre, res5.e, xlabel="fitting value", ylabel="residual")
+end
+
+# ╔═╡ 54c592f0-19a2-11eb-0126-21695f895229
+NormalProbabilityPlot(res5.e)
+
+# ╔═╡ 87fe612e-19a2-11eb-1513-a3aafbf41113
+begin
+	res55 = normal_one_probility(data5.weeks, log.(data5.number))
+	plot(scatter(res55.y_pre, res55.e, xlabel="fitting value", ylabel="residual", leg=:none), NormalProbabilityPlot(res55.e))
+end
+
 # ╔═╡ Cell order:
 # ╟─c98883c0-1794-11eb-2d9b-4138e0d901d8
 # ╟─fab7c734-1793-11eb-2c22-3f7a797bd617
@@ -369,7 +387,7 @@ scatter(data5.weeks, data5.number, leg=:none, xlabel="weeks", ylabel="number")
 # ╠═bae36286-17b0-11eb-0740-53d8bb54e0cc
 # ╠═d53f976a-17b0-11eb-147b-c193db7df691
 # ╠═03f6bdf4-17b1-11eb-15bb-6d1d0ae5be04
-# ╠═9f737ec4-17b4-11eb-1384-351e209c6cb8
+# ╟─9f737ec4-17b4-11eb-1384-351e209c6cb8
 # ╟─a8b71038-17b2-11eb-3ac4-d5ff9fffaa11
 # ╟─fe82916a-18f0-11eb-0f29-2fa6d9326c13
 # ╟─095bae32-18f1-11eb-3ff7-cfdc4125d745
@@ -392,7 +410,7 @@ scatter(data5.weeks, data5.number, leg=:none, xlabel="weeks", ylabel="number")
 # ╠═88253dec-192c-11eb-3fe4-d3c9f3eb9882
 # ╠═f1750ab0-192d-11eb-23c4-f9f82e4343e7
 # ╠═a94f5610-192c-11eb-387f-87f04e2d3774
-# ╟─b29e4abc-192e-11eb-23ce-c52e1b6c41e0
+# ╠═b29e4abc-192e-11eb-23ce-c52e1b6c41e0
 # ╟─c0f3ad04-192f-11eb-166b-59f0ccd50ce1
 # ╠═9ac087a0-1930-11eb-28e9-e7886e5816bc
 # ╠═b367c318-1930-11eb-0d0b-53498dd6eab0
@@ -410,3 +428,7 @@ scatter(data5.weeks, data5.number, leg=:none, xlabel="weeks", ylabel="number")
 # ╟─9d324cb2-1944-11eb-38b1-ff70b0c41486
 # ╟─c769f1e0-1946-11eb-397e-99b41d51b867
 # ╟─2215d92e-1947-11eb-1840-4d92bcb14185
+# ╟─14111252-19a2-11eb-16c2-fbb07b4d574f
+# ╟─2e46c27a-19a2-11eb-31f6-cb94419d9a62
+# ╠═54c592f0-19a2-11eb-0126-21695f895229
+# ╟─87fe612e-19a2-11eb-1513-a3aafbf41113

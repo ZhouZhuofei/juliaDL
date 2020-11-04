@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.12.4
+# v0.12.6
 
 using Markdown
 using InteractiveUtils
@@ -362,6 +362,63 @@ begin
 	plot(scatter(res55.y_pre, res55.e, xlabel="fitting value", ylabel="residual", leg=:none), NormalProbabilityPlot(res55.e))
 end
 
+# ╔═╡ 46694f30-1b91-11eb-269f-6dede05ef8fb
+scatter(data5.weeks, log.(data5.number), leg=:none, xlabel="weeks", ylabel="log(numbers)")
+
+# ╔═╡ f87c19ba-1b92-11eb-295c-41e43149192c
+begin
+	change_data5 = DataFrame(weeks = data5.weeks, numbers = log.(data5.number))
+	ols55 = lm(@formula(numbers ~ weeks), change_data5)
+end
+
+# ╔═╡ 47b98d3a-1b93-11eb-12c1-1d21ee1f2305
+correct(md"""so the function: $ln(numbers) = 1.71622 + 0.1735\cdot weeks$""")
+
+# ╔═╡ 839c68d6-1b93-11eb-3fef-0db10bfe7575
+html"<br></br>"
+
+# ╔═╡ d389d55e-1b93-11eb-0664-e1438da2e017
+md"""
+## 5.6
+Consider the fuel consumpsion data in table B-18, ignoring the regreesion variable x₁, and recalling the complete residual analysis done in exercise 4.27, can transformation improve this analysis? why or why not?
+
+
+> 考虑表B-18中的燃料消耗数据，忽略回归变量x1，回忆习题4.27所做的完整的残差分析，变换能改善这一分析吗？为什么能或为什么不能？
+"""
+
+
+# ╔═╡ 28e28770-1b95-11eb-0f93-b7709ed092d4
+html"<br></br>"
+
+# ╔═╡ 30098fc6-1b95-11eb-362e-bddf13d1e65b
+md"""
+## 5.7
+Consider the methanol oxidation data in Table B-20 and make a throunth analysis of this data.Recalling the residual analysis of this data in problem 4.29, Can transformation improve this analysis? why or why not?
+
+>考虑表B-20中的甲醇氧化数据，对这一数据做彻底的分析，回忆习题4.29对这一数据所做的残差分析。变换能改善这一分析吗？为什么能或为什么不能？
+
+"""
+
+# ╔═╡ b8825eaa-1b95-11eb-2667-3d5b149e2792
+html"<br></br>"
+
+# ╔═╡ c4edfb5e-1b95-11eb-06cc-a3deca511348
+md"""
+## 5.8
+
+Consider three models
+
+1. $y = \beta_0 + \beta_1 ( 1/x) + \epsilon$
+2. $1/y = \beta_0 + \beta_1x + \epsilon$
+3. $y = x/(\beta_0 - \beta_1 x) + \epsilon$
+
+All three of these models are linearized by reciprocal transformation, sketch out what features appear in the scatter plot that will allow you to pick one of the three models.
+> 这三个模型都通过倒数变换而线性化， 画出草图， 散点图出现什么特征会让你挑选三种模型中的一种。
+"""
+
+# ╔═╡ bd9932e6-1b96-11eb-35c7-957ea3fef253
+html"<br></br>"
+
 # ╔═╡ Cell order:
 # ╟─c98883c0-1794-11eb-2d9b-4138e0d901d8
 # ╟─fab7c734-1793-11eb-2c22-3f7a797bd617
@@ -430,5 +487,15 @@ end
 # ╟─2215d92e-1947-11eb-1840-4d92bcb14185
 # ╟─14111252-19a2-11eb-16c2-fbb07b4d574f
 # ╟─2e46c27a-19a2-11eb-31f6-cb94419d9a62
-# ╠═54c592f0-19a2-11eb-0126-21695f895229
+# ╟─54c592f0-19a2-11eb-0126-21695f895229
 # ╟─87fe612e-19a2-11eb-1513-a3aafbf41113
+# ╟─46694f30-1b91-11eb-269f-6dede05ef8fb
+# ╟─f87c19ba-1b92-11eb-295c-41e43149192c
+# ╟─47b98d3a-1b93-11eb-12c1-1d21ee1f2305
+# ╟─839c68d6-1b93-11eb-3fef-0db10bfe7575
+# ╟─d389d55e-1b93-11eb-0664-e1438da2e017
+# ╟─28e28770-1b95-11eb-0f93-b7709ed092d4
+# ╟─30098fc6-1b95-11eb-362e-bddf13d1e65b
+# ╟─b8825eaa-1b95-11eb-2667-3d5b149e2792
+# ╟─c4edfb5e-1b95-11eb-06cc-a3deca511348
+# ╟─bd9932e6-1b96-11eb-35c7-957ea3fef253
